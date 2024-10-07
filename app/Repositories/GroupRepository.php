@@ -31,10 +31,16 @@ class GroupRepository implements GroupInterface
         return Group::all();
     }
 
-    public function create(array $data)
+    public function create(array $data, $creatorEmail)
     {
-        return  Group::create($data);
+        $group = Group::create($data);
+        $this->addMember($group->id, ['email' => $creatorEmail]);
+        return  $group;
     }
+
+
+
+
 
     //ici l'id du groupe
     public function show($id)

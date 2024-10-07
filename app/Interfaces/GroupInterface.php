@@ -7,7 +7,8 @@ use App\Models\User;
 
 interface GroupInterface
 {
-    public function create(array $data);
+    // public function create(array $data);
+    public function create(array $data, $creatorEmail);
     public function index();
 
     public function getGroupByUser();

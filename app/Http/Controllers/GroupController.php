@@ -8,6 +8,7 @@ use App\Http\Resources\GroupResource;
 use App\Interfaces\GroupInterface;
 use App\Interfaces\InvitationInterface;
 use App\Responses\ApiResponse;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class GroupController extends Controller
@@ -49,7 +50,7 @@ class GroupController extends Controller
                 200
             );
         } catch (\Throwable $th) {
-            return $th;
+          
             return ApiResponse::rollback($th);
         }
     }
@@ -60,18 +61,19 @@ class GroupController extends Controller
         $data = [
             'name' => $groupRequest->name,
             'description' => $groupRequest->description,
-            'user_id' => auth()->id(),
+            'user_id' => Auth::id(),
+
         ];
 
         DB::beginTransaction();
         try {
-            $group = $this->groupInterface->create($data);
+            $group = $this->groupInterface->create($data, Auth::user()->email);
 
             DB::commit();
-            // [new groupResource($group)] la data qu'on envoie
+           
             return ApiResponse::sendResponse(true, [new GroupResource($group)], 'Groupe créé avec succès', 201);
         } catch (\Throwable $th) {
-            // return $th;
+           
             return ApiResponse::rollback($th);
         }
     }
@@ -92,7 +94,7 @@ class GroupController extends Controller
                     false,
                     [],
                     'Email déjà utilisé',
-                    409 // Code de conflit pour indiquer que l'utilisateur existe déjà
+                    409
                 );
             }
 
