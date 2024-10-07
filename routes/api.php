@@ -23,10 +23,13 @@ Route::prefix('v1.0.0')->group(function () {
         Route::post('group', [GroupController::class, 'registerGroup']);
         Route::post('group/{id}/members', [GroupController::class, 'addMember']);
         Route::get('groups', [GroupController::class, 'index']);
+        Route::get('/user-groups', [GroupController::class, 'getGroupByUser']);
+
 
         // les routes pour les fichiers
-        Route::post('uploadfile/{id}/', [FileController::class, 'upload']);
-        Route::get('groups/{groupId}/{fileId}/download', [FileController::class, 'download'])->name('file.download');
-        Route::delete('groups/{groupId}/{fileId}/delete', [FileController::class, 'delete'])->name('file.download');
+        Route::post('uploadfile/{id}', [FileController::class, 'upload']);
+        Route::get('groupfiles/{groupId}', [FileController::class, 'getFilesForGroup']);
+        Route::get('groups/{groupId}/{fileId}/download', [FileController::class, 'download']);
+        Route::delete('groups/{groupId}/{fileId}/delete', [FileController::class, 'delete']);
     });
 });

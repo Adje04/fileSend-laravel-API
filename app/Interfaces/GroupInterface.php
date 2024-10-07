@@ -10,7 +10,7 @@ interface GroupInterface
     public function create(array $data);
     public function index();
 
-    public function show($id);
+    public function getGroupByUser();
 
     public function addMember(int $id, array $data);
 

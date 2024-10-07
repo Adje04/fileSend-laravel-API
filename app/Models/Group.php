@@ -16,36 +16,28 @@ class Group extends Model
     protected $fillable = [
         'name',
         'description',
-        'user_id', 
+        'user_id',
     ];
 
 
 
-    
+
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
 
-       // Relation avec les membres 
-       public function members()
-       {
-           return $this->belongsToMany(User::class, 'members', 'group_id', 'user_id')
-                       ->withTimestamps();
-       }
+    // Relation avec les membres 
+    public function members()
+    {
+        return $this->belongsToMany(User::class, 'members', 'group_id', 'user_id')
+            ->withTimestamps();
+    }
 
 
-       public function files()
-       {
-           return $this->hasMany(File::class);
-       }
-
+    public function files()
+    {
+        return $this->hasMany(File::class);
+    }
 }
-
-
-
-
-
-
-

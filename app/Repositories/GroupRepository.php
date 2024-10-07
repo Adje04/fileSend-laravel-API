@@ -12,6 +12,7 @@ use App\Models\Member;
 use App\Models\User;
 use App\Responses\ApiResponse;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Str;
 use function PHPUnit\Framework\assertNotFalse;
@@ -43,6 +44,16 @@ class GroupRepository implements GroupInterface
     public function createMember(array $data)
     {
         return  Member::create($data);
+    }
+
+    public function getGroupByUser()
+    {
+
+        $authUser = Auth::id();
+
+        return Group::withWhereHas('members', fn($query) =>
+        $query->where('user_id', $authUser))
+            ->get();
     }
 
     public function addMember(int $id, array $data)
@@ -83,113 +94,4 @@ class GroupRepository implements GroupInterface
             Mail::to($member->email)->send(new NotifyGroupMemberMail($group, $newUser));
         }
     }
-
-
-    // public function sendInvitation(array $data)
-    // {
-
-    //     Invitation::create($data);
-
-    //     // Envoyer l'e-mail d'invitation
-    //     Mail::to($data['email'])->send(new InviteToGroupMail($data['group'], (object) ['email' => $data['email']],));
-    // }
 }
-
-/*
-public function addMember(int $groupId, string $email)
-{
-    $group = Group::findOrFail($groupId);
-    $user = User::where('email', $email)->first();
-
-    if ($user) {
-        // Si l'utilisateur existe déjà, on l'ajoute au groupe
-        $group->members()->attach($user->id);
-
-        // Envoyer un e-mail à l'utilisateur ajouté
-        Mail::to($user->email)->send(new GroupNotificationMail($group, $user, 'user_added'));
-
-        // Envoyer un e-mail à tous les autres membres du groupe
-        $this->notifyGroupMembers($group, $user);
-    } else {
-        // Si l'utilisateur n'existe pas, on envoie une invitation
-        $this->sendInvitationToNonRegisteredUser($group, $email);
-    }
-}
-
-private function notifyGroupMembers(Group $group, User $newUser)
-{
-    $members = $group->members()->where('id', '!=', $newUser->id)->get();
-
-    foreach ($members as $member) {
-        Mail::to($member->email)->send(new GroupNotificationMail($group, $member));
-    }
-}
-
-private function sendInvitationToNonRegisteredUser(Group $group, string $email)
-{
-    $token = Str::random(32);
-    Invitation::create([
-        'group_id' => $group->id,
-        'email' => $email,
-        'token' => $token,
-        'expires_at' => Carbon::now()->addDays(7),
-    ]);
-
-    // Envoyer l'e-mail d'invitation
-    Mail::to($email)->send(new GroupNotificationMail($group, (object) ['name' => $email], 'invite', $token));
-}
-*/
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
- /*namespace App\Repositories;
-
-use App\Interfaces\GroupInterface;
-use App\Models\Group;
-use App\Models\User;
-use Illuminate\Support\Facades\Mail;
-
-class GroupRepository implements GroupInterface
-{
-    public function create(array $data)
-    {
-        return Group::create($data);
-    }
-
-    public function addMember(int $id, string $email)
-    {
-        $group = Group::findOrFail($id);
-        $user = User::where('email', $email)->first();
-
-        if ($user) {
-            // Si l'utilisateur existe déjà, on l'ajoute au groupe
-            $group->members()->attach($user->id);
-        } else {
-            // Si l'utilisateur n'existe pas, on lui envoie une invitation
-            $this->sendInvitationEmail($group, $email);
-        }
-    }
-
-    private function sendInvitationEmail(Group $group, string $email)
-    {
-        // Logique pour envoyer un e-mail d'invitation
-        Mail::to($email)->send(new \App\Mail\InviteToGroup($group));
-    }
-   
-}*/

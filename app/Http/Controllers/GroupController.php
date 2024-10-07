@@ -25,8 +25,7 @@ class GroupController extends Controller
     public function index()
     {
         try {
-            //   $groups = Group::with('members')->get();
-            //   return GroupResource::collection($groups);
+         
             $groups = $this->groupInterface->index();
             return ApiResponse::sendResponse(
                 true,
@@ -38,6 +37,23 @@ class GroupController extends Controller
             return ApiResponse::rollback($th);
         }
     }
+    public function getGroupByUser() {
+        try {
+            //  $groups = Group::where('user_id', auth()->id())->get();
+            $groupByUser = $this->groupInterface->getGroupByUser();
+    
+            return ApiResponse::sendResponse(
+                true,
+                GroupResource::collection($groupByUser),
+                'Groupes récupérés avec succès pour l’utilisateur connecté',
+                200
+            );
+        } catch (\Throwable $th) {
+            return $th;
+            return ApiResponse::rollback($th);
+        }
+    }
+
 
     public function registerGroup(GroupRequest $groupRequest)
     {
@@ -116,98 +132,3 @@ class GroupController extends Controller
         }
     }
 }
-
-
-
-
-
-
-     // if ($group) {
-            //     DB::commit();
-            //     return ApiResponse::sendResponse(
-            //         true,
-            //         [new GroupResource($group)],
-            //         'Membre ajouté avec succès',
-            //         201
-            //     );
-            // } else {
-
-            //     $data = [
-            //         'group_id' => $id,
-            //         'email' => $memberRequest->email,
-            //     ];
-            //     DB::beginTransaction();
-            //     try {
-            //         $invitation = $this->groupInterface->sendInvitation($data);
-
-            //         DB::commit();
-
-            //         return ApiResponse::sendResponse(
-            //             true,
-            //             $invitation,
-            //             'Pas encore inscrit! une invitation vous a eté envoyé',
-            //             201
-            //         );
-            //     } catch (\Throwable $th) {
-            //         return $th;
-            //         return ApiResponse::rollback($th);
-            //     }
-            // }
-
-
-
-
-
- /*     public function addMember(MemberRequest $memberRequest, $id)
-    {
-        DB::beginTransaction();
-        try {
-            $email = $memberRequest->email;
-
-            $user = User::where('email', $email)->first();
-
-            $group = $this->groupInterface->find($id);
-
-            if ($user) {
-
-                $group->members()->attach($user->id);
-            } else {
-
-                return ApiResponse::sendResponse(
-                    false,
-                    [],
-                    'l\'utilisateur n\'est pas inscrit',
-                    201
-                );
-            }
-            DB::commit();
-
-            return ApiResponse::sendResponse(
-                true,
-                [new GroupResource($group)],
-                'Membre ajouté ou invitation envoyée',
-                201
-            );
-        } catch (\Throwable $th) {
-            DB::rollback();
-            return ApiResponse::rollback($th);
-        }
-    }
-
-
-
-     L'utilisateur n'est pas inscrit, on envoie une invitation
-                $invitation = Invitation::create([
-                    'email' => $request->email,
-                    'group_id' => $id,
-                    'token' => Str::random(32),
-                ]);
-                 Envoyer un email d'invitation
-                Mail::to($request->email)->send(new \App\Mail\InviteToGroup($invitation));
-                 return ApiResponse::sendResponse(
-                     true,
-                     [],
-                     'Invitation envoyée',
-                     201
-
-  */
